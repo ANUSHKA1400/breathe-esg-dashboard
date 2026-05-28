@@ -1,9 +1,9 @@
-// eslint-disable-next-line no-unused-vars
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import axios from "axios";
 
-function App() {
+const BASE_URL = "https://breathe-esg-backend-241q.onrender.com";
 
+function App() {
   const [records, setRecords] = useState([]);
   const [file, setFile] = useState(null);
 
@@ -12,560 +12,234 @@ function App() {
     fetchRecords();
   }, []);
 
+  // FETCH RECORDS
   const fetchRecords = async () => {
-
     try {
-
-      const response = await axios.get(
-        "http://127.0.0.1:8000/api/records/"
-      );
-
+      const response = await axios.get(`${BASE_URL}/api/records/`);
       setRecords(response.data);
-
     } catch (error) {
-      console.log(error);
+      console.log("Fetch error:", error);
     }
   };
 
+  // UPDATE STATUS
   const updateStatus = async (id, status) => {
-
     try {
-
-      await axios.patch(
-        `http://127.0.0.1:8000/api/update/${id}/`,
-        {
-          status: status,
-        }
-      );
+      await axios.patch(`${BASE_URL}/api/update/${id}/`, {
+        status: status,
+      });
 
       fetchRecords();
-
     } catch (error) {
-      console.log(error);
+      console.log("Update error:", error);
     }
   };
+
+  // UPLOAD FILE
   const handleUpload = async () => {
+    if (!file) {
+      alert("Please select a file");
+      return;
+    }
 
-  if (!file) {
-    alert("Please select a file");
-    return;
-  }
+    const formData = new FormData();
+    formData.append("file", file);
 
-  const formData = new FormData();
+    try {
+      await axios.post(`${BASE_URL}/api/upload/`, formData);
 
-  formData.append("file", file);
+      alert("File uploaded successfully");
+      fetchRecords();
+    } catch (error) {
+      console.log("Upload error:", error);
+      alert("Upload failed");
+    }
+  };
 
-  try {
-
-    await axios.post(
-      "http://127.0.0.1:8000/api/upload/",
-      formData
-    );
-
-    alert("File uploaded successfully");
-
-    fetchRecords();
-
-  } catch (error) {
-
-    console.log(error);
-
-    alert("Upload failed");
-  }
-};
-return (
-  <div
-    style={{
-      minHeight: "100vh",
-      background:
-        "linear-gradient(135deg, #020617, #0f172a, #111827)",
-      padding: "50px",
-      fontFamily: "Inter, Arial, sans-serif"
-    }}
-  >
-
+  return (
     <div
       style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginBottom: "40px"
+        minHeight: "100vh",
+        background: "linear-gradient(135deg, #020617, #0f172a, #111827)",
+        padding: "50px",
+        fontFamily: "Inter, Arial, sans-serif",
       }}
     >
-
-      <div>
-
-        <h1
-          style={{
-            color: "white",
-            fontSize: "44px",
-            margin: "0",
-            fontWeight: "800",
-            letterSpacing: "-1px"
-          }}
-        >
-          ESG Governance Dashboard
-        </h1>
-
-        <p
-          style={{
-            color: "#94a3b8",
-            marginTop: "12px",
-            fontSize: "15px"
-          }}
-        >
-          Sustainability Reporting & Compliance Management
-        </p>
-
-      </div>
-
-      <div
-        style={{
-          background:
-            "linear-gradient(to right, #2563eb, #0ea5e9)",
-          padding: "12px 20px",
-          borderRadius: "14px",
-          boxShadow: "0 4px 15px rgba(37,99,235,0.3)"
-        }}
-      >
-
-        <span
-          style={{
-            color: "white",
-            fontWeight: "800",
-            fontSize: "14px",
-            letterSpacing: "1px"
-          }}
-        >
-          BREATHE ESG
-        </span>
-
-      </div>
-
-    </div>
-
-    <div
-      style={{
-        display: "flex",
-        gap: "20px",
-        marginBottom: "30px"
-      }}
-    >
-
-      <div
-        style={{
-          flex: 1,
-          backgroundColor: "#111827",
-          padding: "22px",
-          borderRadius: "18px",
-          border: "1px solid #1e293b"
-        }}
-      >
-
-        <p
-          style={{
-            color: "#94a3b8",
-            marginBottom: "10px",
-            fontSize: "14px"
-          }}
-        >
-          Total Records
-        </p>
-
-        <h2
-          style={{
-            color: "white",
-            margin: "0",
-            fontSize: "32px"
-          }}
-        >
-          {records.length}
-        </h2>
-
-      </div>
-
-      <div
-        style={{
-          flex: 1,
-          backgroundColor: "#111827",
-          padding: "22px",
-          borderRadius: "18px",
-          border: "1px solid #1e293b"
-        }}
-      >
-
-        <p
-          style={{
-            color: "#94a3b8",
-            marginBottom: "10px",
-            fontSize: "14px"
-          }}
-        >
-          Approved
-        </p>
-
-        <h2
-          style={{
-            color: "#22c55e",
-            margin: "0",
-            fontSize: "32px"
-          }}
-        >
-          {
-            records.filter(
-              (record) => record.status === "approved"
-            ).length
-          }
-        </h2>
-
-      </div>
-
-      <div
-        style={{
-          flex: 1,
-          backgroundColor: "#111827",
-          padding: "22px",
-          borderRadius: "18px",
-          border: "1px solid #1e293b"
-        }}
-      >
-
-        <p
-          style={{
-            color: "#94a3b8",
-            marginBottom: "10px",
-            fontSize: "14px"
-          }}
-        >
-          Rejected
-        </p>
-
-        <h2
-          style={{
-            color: "#ef4444",
-            margin: "0",
-            fontSize: "32px"
-          }}
-        >
-          {
-            records.filter(
-              (record) => record.status === "rejected"
-            ).length
-          }
-        </h2>
-
-      </div>
-
-    </div>
-
-    <div
-      style={{
-        backgroundColor: "#111827",
-        borderRadius: "22px",
-        padding: "32px",
-        border: "1px solid #1e293b",
-        boxShadow: "0 10px 30px rgba(0,0,0,0.4)"
-      }}
-    >
-
+      {/* HEADER */}
       <div
         style={{
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          marginBottom: "30px"
+          marginBottom: "40px",
         }}
       >
-
         <div>
-
-          <h2
-            style={{
-              color: "white",
-              margin: "0",
-              fontSize: "26px",
-              fontWeight: "700"
-            }}
-          >
-            ESG Records
-          </h2>
-
-          <p
-            style={{
-              color: "#64748b",
-              marginTop: "10px",
-              fontSize: "14px"
-            }}
-          >
-            Upload, review and manage sustainability metrics
+          <h1 style={{ color: "white", fontSize: "44px", margin: 0 }}>
+            ESG Governance Dashboard
+          </h1>
+          <p style={{ color: "#94a3b8", marginTop: "10px" }}>
+            Sustainability Reporting & Compliance Management
           </p>
-
         </div>
 
         <div
           style={{
-            display: "flex",
-            gap: "12px",
-            alignItems: "center"
+            background: "linear-gradient(to right, #2563eb, #0ea5e9)",
+            padding: "12px 20px",
+            borderRadius: "14px",
           }}
         >
-
-          <input
-            type="file"
-            onChange={(e) => setFile(e.target.files[0])}
-            style={{
-              backgroundColor: "#1e293b",
-              color: "#cbd5e1",
-              padding: "12px",
-              borderRadius: "10px",
-              border: "1px solid #334155"
-            }}
-          />
-
-          <button
-            onClick={handleUpload}
-            style={{
-              background:
-                "linear-gradient(to right, #2563eb, #0ea5e9)",
-              color: "white",
-              border: "none",
-              padding: "12px 24px",
-              borderRadius: "10px",
-              fontWeight: "700",
-              cursor: "pointer",
-              transition: "0.2s"
-            }}
-          >
-            Upload File
-          </button>
-
+          <span style={{ color: "white", fontWeight: "800" }}>
+            BREATHE ESG
+          </span>
         </div>
-
       </div>
 
-      <table
-        style={{
-          width: "100%",
-          borderCollapse: "collapse"
-        }}
-      >
+      {/* STATS */}
+      <div style={{ display: "flex", gap: "20px", marginBottom: "30px" }}>
+        <div style={cardStyle}>
+          <p style={labelStyle}>Total Records</p>
+          <h2 style={valueStyle}>{records.length}</h2>
+        </div>
 
-        <thead>
+        <div style={cardStyle}>
+          <p style={labelStyle}>Approved</p>
+          <h2 style={{ ...valueStyle, color: "#22c55e" }}>
+            {records.filter((r) => r.status === "approved").length}
+          </h2>
+        </div>
 
-          <tr
-            style={{
-              borderBottom: "1px solid #1e293b"
-            }}
-          >
+        <div style={cardStyle}>
+          <p style={labelStyle}>Rejected</p>
+          <h2 style={{ ...valueStyle, color: "#ef4444" }}>
+            {records.filter((r) => r.status === "rejected").length}
+          </h2>
+        </div>
+      </div>
 
-            <th
-              style={{
-                color: "#64748b",
-                textAlign: "left",
-                padding: "18px"
-              }}
-            >
-              Company
-            </th>
+      {/* TABLE SECTION */}
+      <div style={tableContainer}>
+        <div style={tableHeader}>
+          <h2 style={{ color: "white" }}>ESG Records</h2>
 
-            <th
-              style={{
-                color: "#64748b",
-                textAlign: "left",
-                padding: "18px"
-              }}
-            >
-              Metric
-            </th>
+          <div style={{ display: "flex", gap: "10px" }}>
+            <input
+              type="file"
+              onChange={(e) => setFile(e.target.files[0])}
+              style={fileInput}
+            />
 
-            <th
-              style={{
-                color: "#64748b",
-                textAlign: "left",
-                padding: "18px"
-              }}
-            >
-              Value
-            </th>
+            <button onClick={handleUpload} style={uploadBtn}>
+              Upload
+            </button>
+          </div>
+        </div>
 
-            <th
-              style={{
-                color: "#64748b",
-                textAlign: "left",
-                padding: "18px"
-              }}
-            >
-              Status
-            </th>
-
-            <th
-              style={{
-                color: "#64748b",
-                textAlign: "left",
-                padding: "18px"
-              }}
-            >
-              Actions
-            </th>
-
-          </tr>
-
-        </thead>
-
-        <tbody>
-
-          {records.map((record) => (
-
-            <tr
-              key={record.id}
-              style={{
-                borderBottom: "1px solid #1e293b"
-              }}
-            >
-
-              <td
-                style={{
-                  padding: "26px",
-                  color: "white",
-                  fontWeight: "800",
-                  fontSize: "16px"
-                }}
-              >
-                {record.company_name}
-              </td>
-
-              <td
-                style={{
-                  padding: "26px"
-                }}
-              >
-
-                <span
-                  style={{
-                    backgroundColor: "#172554",
-                    color: "#93c5fd",
-                    padding: "10px 16px",
-                    borderRadius: "10px",
-                    fontWeight: "700",
-                    fontSize: "13px"
-                  }}
-                >
-                  {record.metric}
-                </span>
-
-              </td>
-
-              <td
-                style={{
-                  padding: "26px"
-                }}
-              >
-
-                <span
-                  style={{
-                    backgroundColor: "#0f766e",
-                    color: "white",
-                    padding: "10px 16px",
-                    borderRadius: "10px",
-                    fontWeight: "800"
-                  }}
-                >
-                  {record.value}
-                </span>
-
-              </td>
-
-              <td
-                style={{
-                  padding: "26px"
-                }}
-              >
-
-                <span
-                  style={{
-                    backgroundColor:
-                      record.status === "approved"
-                        ? "#052e16"
-                        : record.status === "rejected"
-                        ? "#450a0a"
-                        : "#422006",
-
-                    color:
-                      record.status === "approved"
-                        ? "#4ade80"
-                        : record.status === "rejected"
-                        ? "#f87171"
-                        : "#facc15",
-
-                    padding: "10px 16px",
-                    borderRadius: "999px",
-                    fontWeight: "800",
-                    fontSize: "12px",
-                    letterSpacing: "1px"
-                  }}
-                >
-                  {record.status.toUpperCase()}
-                </span>
-
-              </td>
-
-              <td
-                style={{
-                  padding: "26px"
-                }}
-              >
-
-                <button
-                  onClick={() =>
-                    updateStatus(record.id, "approved")
-                  }
-                  style={{
-                    backgroundColor: "#2563eb",
-                    color: "white",
-                    border: "none",
-                    padding: "10px 16px",
-                    borderRadius: "10px",
-                    cursor: "pointer",
-                    fontWeight: "700",
-                    transition: "0.2s"
-                  }}
-                >
-                  Approve
-                </button>
-
-                <button
-                  onClick={() =>
-                    updateStatus(record.id, "rejected")
-                  }
-                  style={{
-                    backgroundColor: "#dc2626",
-                    color: "white",
-                    border: "none",
-                    padding: "10px 16px",
-                    borderRadius: "10px",
-                    marginLeft: "10px",
-                    cursor: "pointer",
-                    fontWeight: "700",
-                    transition: "0.2s"
-                  }}
-                >
-                  Reject
-                </button>
-
-              </td>
-
+        <table style={{ width: "100%", color: "white" }}>
+          <thead>
+            <tr style={{ textAlign: "left", color: "#94a3b8" }}>
+              <th>Company</th>
+              <th>Metric</th>
+              <th>Value</th>
+              <th>Status</th>
+              <th>Actions</th>
             </tr>
+          </thead>
 
-          ))}
+          <tbody>
+            {records.map((record) => (
+              <tr key={record.id}>
+                <td>{record.company_name}</td>
 
-        </tbody>
+                <td>
+                  <span style={badgeStyle}>
+                    {record.metric}
+                  </span>
+                </td>
 
-      </table>
+                <td>{record.value}</td>
 
+                <td>{record.status}</td>
+
+                <td>
+                  <button
+                    onClick={() => updateStatus(record.id, "approved")}
+                    style={approveBtn}
+                  >
+                    Approve
+                  </button>
+
+                  <button
+                    onClick={() => updateStatus(record.id, "rejected")}
+                    style={rejectBtn}
+                  >
+                    Reject
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
-
-  </div>
-);
+  );
 }
+
+/* styles */
+const cardStyle = {
+  flex: 1,
+  background: "#111827",
+  padding: "20px",
+  borderRadius: "15px",
+};
+
+const labelStyle = { color: "#94a3b8" };
+const valueStyle = { color: "white", fontSize: "28px" };
+
+const tableContainer = {
+  background: "#111827",
+  padding: "25px",
+  borderRadius: "15px",
+};
+
+const tableHeader = {
+  display: "flex",
+  justifyContent: "space-between",
+  marginBottom: "20px",
+};
+
+const fileInput = {
+  color: "white",
+};
+
+const uploadBtn = {
+  background: "#2563eb",
+  color: "white",
+  padding: "10px 15px",
+  border: "none",
+  borderRadius: "8px",
+};
+
+const badgeStyle = {
+  background: "#1e3a8a",
+  padding: "5px 10px",
+  borderRadius: "8px",
+};
+
+const approveBtn = {
+  background: "green",
+  color: "white",
+  marginRight: "10px",
+  border: "none",
+  padding: "5px 10px",
+};
+
+const rejectBtn = {
+  background: "red",
+  color: "white",
+  border: "none",
+  padding: "5px 10px",
+};
 
 export default App;
