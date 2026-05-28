@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-ye%u5x8(4j!_m!*-3z^^+@(7j6s_k%%590-+1)ftj0h@pcs(24'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+
 
 ALLOWED_HOSTS = [
     "breathe-esg-backend-241q.onrender.com",
@@ -117,10 +117,16 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
-
+REST_FRAMEWORK = {
+    "DEFAULT_RENDERER_CLASSES": (
+        "rest_framework.renderers.JSONRenderer",
+    )
+}
+DEBUG = False
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
-
-STATIC_URL = 'static/'
-CORS_ALLOW_ALL_ORIGINS = True
+STATIC_ROOT = BASE_DIR / "staticfiles"
+STATIC_URL = '/static/'
+CORS_ALLOWED_ORIGINS = [
+    "https://breathe-esg-dashboard-bvmwzmxvc-anushka-mitras-projects.vercel.app",
+]
